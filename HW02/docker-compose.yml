@@ -1,0 +1,12 @@
+services:
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    container_name: kafka-kraft
+    ports:
+      - "9092:9092"
+    env_file:
+      - .env
+    volumes:
+      - ./data:/var/lib/kafka
+      - ./config/kafka_server_jaas.conf:/etc/kafka/kafka_server_jaas.conf:ro
+    restart: unless-stopped
