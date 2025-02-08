@@ -9,6 +9,7 @@ services:
       - "9092:9092"
       - "9101:9101"  # Kafka controller API
     environment:
+      # --- KRaft-specific settings ---
       CLUSTER_ID: "0hwrdfy-QZuxnguQeaxgyg"
       KAFKA_NODE_ID: 1
       KAFKA_PROCESS_ROLES: controller,broker
@@ -17,20 +18,24 @@ services:
       KAFKA_ADVERTISED_LISTENERS: SASL_PLAINTEXT://kafka:9092
       KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
       KAFKA_LOG_DIRS: /var/lib/kafka/data
+
+      # --- Basic Kafka config ---
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
-      KAFKA_LOG_RETENTION_HOURS: 168  # 7 days
-      KAFKA_LOG_RETENTION_BYTES: 1073741824  # 1GB
+      KAFKA_LOG_RETENTION_HOURS: 168        # 7 days
+      KAFKA_LOG_RETENTION_BYTES: 1073741824 # 1GB
+
+      # --- SASL/PLAIN settings ---
       KAFKA_SASL_ENABLED_MECHANISMS: PLAIN
       KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: SASL_PLAINTEXT:SASL_PLAINTEXT,CONTROLLER:PLAINTEXT
       KAFKA_SASL_MECHANISM_INTER_BROKER: PLAIN
       KAFKA_INTER_BROKER_LISTENER_NAME: SASL_PLAINTEXT
-      KAFKA_SASL_MECHANISM_INTER_BROKER_PROTOCOL: PLAIN  # **Add this line**
+      KAFKA_SASL_MECHANISM_INTER_BROKER_PROTOCOL: PLAIN
       KAFKA_OPTS: "-Djava.security.auth.login.config=/etc/kafka/server_jaas.conf"
-
 
     volumes:
       - ./kafka_data:/var/lib/kafka/data
       - ./config/server_jaas.conf:/etc/kafka/server_jaas.conf  # Mount SASL config
+      - ./config/client.properties:/etc/kafka/client.properties
     restart: unless-stopped
 
 volumes:
