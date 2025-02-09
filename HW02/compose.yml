@@ -8,6 +8,7 @@ services:
     ports:
       - "9092:9092"
       - "9101:9101"  # Kafka controller API
+      - "9093:9093"
     environment:
       # --- KRaft-specific settings ---
       CLUSTER_ID: "0hwrdfy-QZuxnguQeaxgyg"
