@@ -38,6 +38,7 @@ services:
       - ./kafka_data:/var/lib/kafka/data
       - ./config/server_jaas.conf:/etc/kafka/server_jaas.conf  # Mount SASL config
       - ./config/client.properties:/etc/kafka/client.properties
+      - ./config/writer-client.properties:/etc/kafka/writer-client.properties
     restart: unless-stopped
 
 volumes:
