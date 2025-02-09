@@ -1,3 +1,5 @@
+version: '3.8'
+
 services:
   kafka:
     image: confluentinc/cp-kafka:latest
@@ -5,8 +7,8 @@ services:
     hostname: kafka
     ports:
       - "9092:9092"
+      - "9093:9093"  # Controller port
       - "9101:9101"  # Kafka controller API
-      - "9093:9093"
     environment:
       # --- KRaft-specific settings ---
       CLUSTER_ID: "0hwrdfy-QZuxnguQeaxgyg"
@@ -24,12 +26,15 @@ services:
       KAFKA_LOG_RETENTION_BYTES: 1073741824 # 1GB
 
       # --- SASL/PLAIN settings ---
-      KAFKA_SASL_ENABLED_MECHANISMS: PLAIN
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: SASL_PLAINTEXT:SASL_PLAINTEXT,CONTROLLER:PLAINTEXT
-      KAFKA_SASL_MECHANISM_INTER_BROKER: PLAIN
-      KAFKA_INTER_BROKER_LISTENER_NAME: SASL_PLAINTEXT
-      KAFKA_SASL_MECHANISM_INTER_BROKER_PROTOCOL: PLAIN
+      #KAFKA_SASL_ENABLED_MECHANISMS: "PLAIN"
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "SASL_PLAINTEXT:SASL_PLAINTEXT,CONTROLLER:PLAINTEXT"
+      KAFKA_SASL_MECHANISM_INTER_BROKER: "PLAIN"
+      KAFKA_INTER_BROKER_LISTENER_NAME: "SASL_PLAINTEXT"
       KAFKA_OPTS: "-Djava.security.auth.login.config=/etc/kafka/server_jaas.conf"
+
+      # --- 🔥 FIX: Enable Kafka Authorizer ---
+      KAFKA_AUTHORIZER_CLASS_NAME: "org.apache.kafka.metadata.authorizer.StandardAuthorizer"
+      KAFKA_ALLOW_EVERYONE_IF_NO_ACL_FOUND: "true"
 
     volumes:
       - ./kafka_data:/var/lib/kafka/data
