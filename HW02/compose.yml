@@ -19,7 +19,8 @@ services:
       KAFKA_LOG_DIRS: /var/lib/kafka/data
 
       # --- Basic Kafka config ---
-      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
+      KAFKA_DELETE_TOPIC_ENABLE: "false"
       KAFKA_LOG_RETENTION_HOURS: 168        # 7 days
       KAFKA_LOG_RETENTION_BYTES: 1073741824 # 1GB
 
@@ -33,12 +34,17 @@ services:
       # --- 🔥 FIX: Enable Kafka Authorizer ---
       KAFKA_AUTHORIZER_CLASS_NAME: "org.apache.kafka.metadata.authorizer.StandardAuthorizer"
       KAFKA_ALLOW_EVERYONE_IF_NO_ACL_FOUND: "true"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_SUPER_USERS: "User:admin"
+
 
     volumes:
       - ./kafka_data:/var/lib/kafka/data
       - ./config/server_jaas.conf:/etc/kafka/server_jaas.conf  # Mount SASL config
-      - ./config/client.properties:/etc/kafka/client.properties
+      - ./config/admin-client.properties:/etc/kafka/admin-client.properties
       - ./config/writer-client.properties:/etc/kafka/writer-client.properties
+      - ./config/reader-client.properties:/etc/kafka/reader-client.properties
+      - ./config/norights-client.properties:/etc/kafka/norights-client.properties
     restart: unless-stopped
 
 volumes:
