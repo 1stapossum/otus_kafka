@@ -1,0 +1,52 @@
+services:
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    container_name: kafka_kraft
+    hostname: kafka
+    ports:
+      - "9092:9092"
+      - "9093:9093"  # Controller port
+      - "9101:9101"  # Kafka controller API
+    environment:
+      # --- KRaft-specific settings ---
+      CLUSTER_ID: "0hwrdfy-QZuxnguQeaxgyg"
+      KAFKA_NODE_ID: 1
+      KAFKA_PROCESS_ROLES: controller,broker
+      KAFKA_CONTROLLER_QUORUM_VOTERS: "1@kafka:9093"
+      KAFKA_LISTENERS: SASL_PLAINTEXT://kafka:9092,CONTROLLER://kafka:9093
+      KAFKA_ADVERTISED_LISTENERS: SASL_PLAINTEXT://kafka:9092
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_LOG_DIRS: /var/lib/kafka/data
+
+      # --- Basic Kafka config ---
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: "false"
+      KAFKA_DELETE_TOPIC_ENABLE: "false"
+      KAFKA_LOG_RETENTION_HOURS: 168        # 7 days
+      KAFKA_LOG_RETENTION_BYTES: 1073741824 # 1GB
+
+      # --- SASL/PLAIN settings ---
+      KAFKA_SASL_ENABLED_MECHANISMS: "PLAIN"
+      KAFKA_SASL_MECHANISM_INTER_BROKER_PROTOCOL: "PLAIN"
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: "SASL_PLAINTEXT:SASL_PLAINTEXT,CONTROLLER:PLAINTEXT"
+      KAFKA_INTER_BROKER_LISTENER_NAME: "SASL_PLAINTEXT"
+      KAFKA_OPTS: "-Djava.security.auth.login.config=/etc/kafka/server_jaas.conf"
+
+      # --- 🔥 FIX: Enable Kafka Authorizer ---
+      KAFKA_AUTHORIZER_CLASS_NAME: "org.apache.kafka.metadata.authorizer.StandardAuthorizer"
+      KAFKA_ALLOW_EVERYONE_IF_NO_ACL_FOUND: "true"
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_SUPER_USERS: "User:admin"
+
+
+    volumes:
+      - ./kafka_data:/var/lib/kafka/data
+      - ./config/server_jaas.conf:/etc/kafka/server_jaas.conf  # Mount SASL config
+      - ./config/admin-client.properties:/etc/kafka/admin-client.properties
+      - ./config/writer-client.properties:/etc/kafka/writer-client.properties
+      - ./config/reader-client.properties:/etc/kafka/reader-client.properties
+      - ./config/norights-client.properties:/etc/kafka/norights-client.properties
+    restart: unless-stopped
+
+volumes:
+  kafka_data:
+    driver: local
