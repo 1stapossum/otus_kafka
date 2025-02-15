@@ -16,7 +16,10 @@
 Для пользователя reader сообщения получены БЫЛИ. Скриншот№12.
 Для пользователя norights сообщения получены НЕ БЫЛИ. Скриншот№13
 
-
+6. Получен список топиков для пользователей writer, reader и norights.
+Для пользователя writer список топиков получен. Скриншот№14.
+Для пользователя reader список топиков получен. Скриншот№15.
+Для пользователя norights список топиков получен. Скриншот№16. нашего топика в списке нет.
 
 
 
@@ -65,3 +68,12 @@ docker exec -it kafka_kraft kafka-console-consumer   --bootstrap-server kafka:90
 
 Consume from norights client:
 docker exec -it kafka_kraft kafka-console-consumer   --bootstrap-server kafka:9092   --topic my-secure-topic   --consumer.config /etc/kafka/norights-client.properties   --from-beginning
+
+Get topics by writer client:
+docker exec -it kafka_kraft   kafka-topics --bootstrap-server kafka:9092   --list   --command-config /etc/kafka/writer-client.properties
+
+Get topics by readers client:
+docker exec -it kafka_kraft   kafka-topics --bootstrap-server kafka:9092   --list   --command-config /etc/kafka/reader-client.properties
+
+Get topics by norights client:
+docker exec -it kafka_kraft   kafka-topics --bootstrap-server kafka:9092   --list   --command-config /etc/kafka/norights-client.properties
